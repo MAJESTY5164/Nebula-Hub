@@ -138,7 +138,7 @@ if Hub["HubStatus"] == false then
     game:GetService("Players").LocalPlayer:Kick(Hub["OfflineReason"])
 end
 
-if Hub["HubStatus"] == true and getgenv().playerStatus == not("Banned") and devbuild == nil then
+if devbuild == nil then
     loadHub = "https://raw.githubusercontent.com/MAJESTY5164/Nebula-Hub/main/Hub.lua"
-    loadstring(game:HttpGet(controllerUrl))()
+    loadstring(game:HttpGet(loadHub))()
 end
