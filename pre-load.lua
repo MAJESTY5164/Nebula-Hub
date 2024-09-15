@@ -61,6 +61,9 @@ getgenv().Executor = identifyexecutor()
 getgenv().GameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
 getgenv().HWID = game:GetService("RbxAnalyticsService"):GetClientId()
 getgenv().DiscordInvite = "tbsrZA8Atm"
+getgenv().SettingsFileName = "NebulaSettings.txt"
+getgenv().doseSettingsExist = isfile(getgenv().SettingsFileName)
+getgenv().HttpService = game:GetService("HttpService")
 
 if devbuild == nil then
     controllerUrl = "https://raw.githubusercontent.com/MAJESTY5164/Nebula-Hub/main/Controller.lua"
