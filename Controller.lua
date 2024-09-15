@@ -39,7 +39,7 @@ SetExecScripts("all", nil)
 -- Controller Tables/Vars
 
 -- Users
-Dev = {733218668, 0}
+Dev = {733218668, 720793101}
 Beta = {733218668, 0}
 Banned = {733218668, 0}
 HWIDBanned = {"", 0}
@@ -56,9 +56,7 @@ HubVersion = "1.0"
 
 -- Exec Support
 
-if getgenv().Executor == "Zorara" then
-    SetExecScripts("Debug", false)
-elseif getgenv().Executor == "Solara" then
+if getgenv().Executor == "Solara" then
     SetExecScripts("discord", false)
 end
 
@@ -139,9 +137,13 @@ if Hub["HubStatus"] == false then
 end
 
 if getgenv().playerStatus == "User" then
+    if getgenv().doseSettingsExist == true then
  if getgenv().HttpService:JSONDecode(readfile("NebulaSettings.txt"))["BetaKeyUsed"] == getgenv().BetaKey then
     getgenv().playerStatus = "Beta"
+ elseif getgenv().HttpService:JSONDecode(readfile("NebulaSettings.txt"))["DevKeyUsed"] == getgenv().DevKey then
+    getgenv().playerStatus = "Dev"
  end
+end
 end
 
 if Hub["HubStatus"] == true and getgenv().playerStatus == not("Banned") and devbuild == nil then
