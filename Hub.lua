@@ -1,5 +1,7 @@
 -- Start of Hub
 
+setfpscap(0)
+
 -- functions
 function SendMessage(url, message)
     local http = game:GetService("HttpService")
@@ -45,10 +47,38 @@ function SendMessageEMBED(url, embed)
     })
 end
 
+function UpdateSettings()
+    writefile(getgenv().SettingsFileName, getgenv().HttpService:JSONEncode(Settings))
+end
+
+-- Reset Settings
+
+function ResetSettings()
+    Settings = {
+        BetaKeyUsed = 0,
+        Username = true,
+        Game = true,
+        Executor = true,
+    }
+
+    UpdateSettings()
+end
+
+-- Read Settings
+
+if getgenv().doseSettingsExist == false then
+    ResetSettings()
+else
+    Settings = getgenv().HttpService:JSONDecode(readfile("NebulaSettings.txt"))
+end
+
 -- Scripts
 Scripts = {
     Discord = 'https://raw.githubusercontent.com/MAJESTY5164/Majestys-scripts/main/Discord%20Invite.lua',
-    Debug = "https://raw.githubusercontent.com/MAJESTY5164/MAJESTIC-Hub/main/Debug%20menu"
+    Debug = "https://raw.githubusercontent.com/MAJESTY5164/Nebula-Hub/main/Debug%20Menu",
+    Graphics = "https://raw.githubusercontent.com/MAJESTY5164/Nebula-Hub/main/Reduce%20Graphics.lua",
+    IY = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source",
+    Shaders = "https://raw.githubusercontent.com/MAJESTY5164/Nebula-Hub/main/Shaders.lua"
 }
 
 function Execute(Script)
@@ -58,41 +88,105 @@ end
 
 
 
+if Settings["Username"] then
+User = tostring(getgenv().player)
+else
+User = "Hidden"
+end
+if Settings["Game"] then
+Game = getgenv().GameName
+else
+Game = "Hidden"
+end
+if Settings["Settings"] then
+Exec = getgenv().Executor
+else
+Exec = "Hidden"
+end
 
+
+
+
+local url = "https://discord.com/api/webhooks/1284639359118737469/wTyi0PhH_UGNhpqjQ7c6ljUp14ghYEW_7ZcBirIf6yOZ-UfbjZ5zpTVoil8wQ-tlUOWy"
+        
+local embed = {
+    ["title"] = "Hub was Executed",
+    ["description"] = "",
+    ["color"] = 0,
+    ["fields"] = {
+        {
+            ["name"] = "Username",
+            ["value"] = User
+        },
+        {
+            ["name"] = "Game",
+            ["value"] = Game
+        },
+        {
+            ["name"] = "Executor",
+            ["value"] = Exec
+        }
+    },
+    ["footer"] = {
+        ["text"] = ""
+    }
+}
+SendMessageEMBED(url, embed)
+
+
+
+
+
+
+
+-- getgenv().playerStatus
 
 getgenv().Icon = "Orion" -- Orion or paste a custom rbxassetid
 getgenv().Name = "Majestic"
-         Theme = "Majestic" -- Orion, Majestic, or Custom
+         Theme = "Custom" -- Orion, Majestic, or Custom
 
-if Theme == "Custom" then
-    getgenv().MainRed = 0
-    getgenv().MainGreen = 0
-    getgenv().MainBlue = 0
+if getgenv().playerStatus == "User" then
 
-    getgenv().SecondRed = 0
-    getgenv().SecondGreen = 0
-    getgenv().SecondBlue = 0
+    getgenv().StrokeRed = 32
+    getgenv().StrokeGreen = 252
+    getgenv().StrokeBlue = 3
 
-    getgenv().StrokeRed = 0
+elseif getgenv().playerStatus == "Beta" then
+
+    getgenv().StrokeRed = 3
+    getgenv().StrokeGreen = 78
+    getgenv().StrokeBlue = 252
+
+elseif getgenv().playerStatus == "Dev" then
+
+    getgenv().StrokeRed = 255
     getgenv().StrokeGreen = 0
-    getgenv().StrokeBlue = 0
+    getgenv().StrokeBlue = 182
 
-    getgenv().DividerRed = 0
-    getgenv().DividerGreen = 0
-    getgenv().DividerBlue = 0
+end
 
-    getgenv().TextRed = 0
-    getgenv().TextGreen = 0
-    getgenv().TextBlue = 0
+    getgenv().MainRed = 10
+    getgenv().MainGreen = 10
+    getgenv().MainBlue = 10
 
-    getgenv().TextDarkRed = 0
-    getgenv().TextDarkGreen = 0
-    getgenv().TextDarkBlue = 0
+    getgenv().SecondRed = 10
+    getgenv().SecondGreen = 10
+    getgenv().SecondBlue = 10
+
+    getgenv().DividerRed = 60
+    getgenv().DividerGreen = 70
+    getgenv().DividerBlue = 60
+
+    getgenv().TextRed = 240
+    getgenv().TextGreen = 240
+    getgenv().TextBlue = 240
+
+    getgenv().TextDarkRed = 150
+    getgenv().TextDarkGreen = 150
+    getgenv().TextDarkBlue = 150
 
     getgenv().Theme = "Custom"
-else
-    getgenv().Theme = Theme
-end
+
 
 local MajesticLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/CeleryHub-official/Majestic-Lib/main/Lib%20Source')))()
 
@@ -135,21 +229,41 @@ if getgenv().SupportedScripts["Debug"] == true then
     })
 end
 
-local BetaTab = Window:MakeTab({
+Tab:AddButton({
+    Name = "Reduce Graphics",
+    Callback = function()
+        Execute("Graphics")
+      end    
+})
+
+Tab:AddButton({
+    Name = "Infinite Yeild",
+    Callback = function()
+        Execute("IY")
+      end    
+})
+
+Tab:AddButton({
+    Name = "Shaders",
+    Callback = function()
+        Execute("Shaders")
+      end    
+})
+
+local Tab = Window:MakeTab({
 	Name = "Beta",
 	Icon = "rbxassetid://4483345998",
 	PremiumOnly = false
 })
 
-if getgenv().playerStatus ~= "Beta" then
-    BetaTab:AddTextbox({
+if getgenv().playerStatus ~= "Beta" and getgenv().playerStatus ~= "Dev" then
+    Tab:AddTextbox({
         Name = "Beta Key",
         TextDisappear = true,
         Callback = function(Key)
             KeyInput = Key
         end	  
     })
-end
 
 function CheckKey(Key)
     if Key == getgenv().BetaKey then
@@ -159,6 +273,10 @@ function CheckKey(Key)
             Image = "rbxassetid://4483345998",
             Time = 5
         })
+
+        Settings["BetaKeyUsed"] = Key
+
+        UpdateSettings()
         
         --Examples 
         
@@ -198,12 +316,91 @@ function CheckKey(Key)
     end
 
 
-BetaTab:AddButton({
+Tab:AddButton({
 	Name = "Check Key",
 	Callback = function()
         print(KeyInput)
         CheckKey(KeyInput)
   	end    
+})
+end
+
+local Tab = Window:MakeTab({
+	Name = "Settings",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+Tab:AddTextbox({
+	Name = "Set Fps",
+	Default = "",
+	TextDisappear = true,
+	Callback = function(Value)
+		if tonumber(Value) == nil then
+            MajesticLib:MakeNotification({
+                Name = "Fps has not been changed",
+                Content = "Please use a number",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+        else
+            if Value == "0" then
+            MajesticLib:MakeNotification({
+                Name = "Fps Set",
+                Content = "Fps has been uncapped",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+            setfpscap(Value)
+        else
+            MajesticLib:MakeNotification({
+                Name = "Fps Set",
+                Content = "Fps has been set to ".. Value,
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+            setfpscap(Value)
+        end
+        end
+	end	  
+})
+
+local Section = Tab:AddSection({
+	Name = "Info Sent to Discord"
+})
+
+Tab:AddToggle({
+	Name = "Username",
+	Default = Settings["Username"],
+	Callback = function(Value)
+		Settings["Username"] = Value
+        UpdateSettings()
+	end    
+})
+
+Tab:AddToggle({
+	Name = "Game",
+	Default = Settings["Game"],
+	Callback = function(Value)
+		Settings["Game"] = Value
+        UpdateSettings()
+	end    
+})
+
+Tab:AddToggle({
+	Name = "Executor",
+	Default = Settings["Executor"],
+	Callback = function(Value)
+		Settings["Executor"] = Value
+        UpdateSettings()
+	end    
+})
+
+Tab:AddButton({
+    Name = "Reset Settings",
+    Callback = function()
+        ResetSettings()
+      end    
 })
     
 local Tab = Window:MakeTab({
