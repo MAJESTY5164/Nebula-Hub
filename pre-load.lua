@@ -1,7 +1,8 @@
 -- Get Beta Key
 
 k1 = os.date("%j" .. 20 .. "%y")
-k2 = math.floor(k1 * k1)
+k2 = math.floor(k1 * k1 * 0.3)
+k1 = math.floor(k1 * k1)
 
 function replace_characters(text)
     local replacements = {
@@ -25,7 +26,8 @@ function replace_characters(text)
     return result
 end
 
-getgenv().BetaKey = replace_characters(tostring(k2))
+getgenv().BetaKey = replace_characters(tostring(k1))
+getgenv().DevKey = replace_characters(tostring(k2))
 
 function SendMessageEMBED(url, embed)
     local http = game:GetService("HttpService")
