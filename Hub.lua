@@ -56,12 +56,13 @@ end
 function ResetSettings()
     Settings = {
         BetaKeyUsed = 0,
+        DevKeyUsed = 0,
         Username = true,
         Game = true,
         Executor = true,
     }
 
-    UpdateSettings()
+    writefile(getgenv().SettingsFileName, getgenv().HttpService:JSONEncode(Settings))
 end
 
 -- Read Settings
@@ -78,7 +79,9 @@ Scripts = {
     Debug = "https://raw.githubusercontent.com/MAJESTY5164/Nebula-Hub/main/Debug%20Menu",
     Graphics = "https://raw.githubusercontent.com/MAJESTY5164/Nebula-Hub/main/Reduce%20Graphics.lua",
     IY = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source",
-    Shaders = "https://raw.githubusercontent.com/MAJESTY5164/Nebula-Hub/main/Shaders.lua"
+    Shaders = "https://raw.githubusercontent.com/MAJESTY5164/Nebula-Hub/main/Shaders.lua",
+    ItemGiver = "https://raw.githubusercontent.com/MAJESTY5164/Nebula-Hub/main/DebugItemGiver.lua",
+    Dex = "",
 }
 
 function Execute(Script)
@@ -98,7 +101,7 @@ Game = getgenv().GameName
 else
 Game = "Hidden"
 end
-if Settings["Settings"] then
+if Settings["Executor"] then
 Exec = getgenv().Executor
 else
 Exec = "Hidden"
@@ -198,10 +201,12 @@ local Tab = Window:MakeTab({
 	PremiumOnly = false
 })
 
-Tab:AddLabel("Celery Hub access level - " .. getgenv().playerStatus)
-Tab:AddLabel("Celery Hub Version - " .. getgenv().HubVersion)
+Tab:AddLabel("Nebula Hub access level - " .. getgenv().playerStatus)
+Tab:AddLabel("Nebula Hub Version - " .. getgenv().HubVersion)
 Tab:AddLabel("Executor - " .. getgenv().Executor)
 Tab:AddLabel("Join our discord at discord.gg/" .. getgenv().DiscordInvite)
+
+print("UserID ".. getgenv().playerID)
 
 if getgenv().SupportedScripts["discord"] == true then
     
@@ -213,21 +218,36 @@ if getgenv().SupportedScripts["discord"] == true then
     })
 end
 
+if getgenv().playerStatus == "Dev" then
+local Tab = Window:MakeTab({
+	Name = "Dev",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+Tab:AddButton({
+    Name = "Debug Menu",
+    Callback = function()
+        Execute("Debug")
+      end    
+})
+
+Tab:AddButton({
+    Name = "Tool Giver",
+    Callback = function()
+        Execute("ItemGiver")
+      end    
+})
+
+end
+
+-- Universals
+
 local Tab = Window:MakeTab({
 	Name = "Universals",
 	Icon = "rbxassetid://4483345998",
 	PremiumOnly = false
 })
-
-if getgenv().SupportedScripts["Debug"] == true then
-    
-    Tab:AddButton({
-        Name = "Debug Menu",
-        Callback = function()
-            Execute("Debug")
-          end    
-    })
-end
 
 Tab:AddButton({
     Name = "Reduce Graphics",
@@ -243,12 +263,27 @@ Tab:AddButton({
       end    
 })
 
+getgenv().Shaders = false
+
 Tab:AddButton({
     Name = "Shaders",
     Callback = function()
+        if getgenv().Shaders == false then
+        getgenv().Shaders = true
         Execute("Shaders")
+        else
+            MajesticLib:MakeNotification({
+                Name = "Shaders Are already active",
+                Content = "",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+        end
       end    
 })
+
+-- Beta
+if getgenv().playerStatus == "Beta" or getgenv().playerStatus == "Dev" then
 
 local Tab = Window:MakeTab({
 	Name = "Beta",
@@ -256,73 +291,6 @@ local Tab = Window:MakeTab({
 	PremiumOnly = false
 })
 
-if getgenv().playerStatus ~= "Beta" and getgenv().playerStatus ~= "Dev" then
-    Tab:AddTextbox({
-        Name = "Beta Key",
-        TextDisappear = true,
-        Callback = function(Key)
-            KeyInput = Key
-        end	  
-    })
-
-function CheckKey(Key)
-    if Key == getgenv().BetaKey then
-        MajesticLib:MakeNotification({
-            Name = "Success!",
-            Content = "The key has been verified",
-            Image = "rbxassetid://4483345998",
-            Time = 5
-        })
-
-        Settings["BetaKeyUsed"] = Key
-
-        UpdateSettings()
-        
-        --Examples 
-        
-        local url = "https://discord.com/api/webhooks/1284273292621910179/Xsm8wRzDWgRPfc2lj3oDWJ5aDlWGL4xHIwA-9LCudgq5sdUztcmZfPMJQtcqsOSRAiNy"
-        
-        local embed = {
-            ["title"] = "Beta Key was used",
-            ["description"] = "",
-            ["color"] = 0,
-            ["fields"] = {
-                {
-                    ["name"] = "Username",
-                    ["value"] = tostring(getgenv().player)
-                },
-                {
-                    ["name"] = "UserId",
-                    ["value"] = tostring(getgenv().playerID)
-                },
-                {
-                    ["name"] = "HWID",
-                    ["value"] = tostring(getgenv().HWID)
-                }
-            },
-            ["footer"] = {
-                ["text"] = ""
-            }
-        }
-        SendMessageEMBED(url, embed)
-        else
-            MajesticLib:MakeNotification({
-                Name = "Failed!",
-                Content = "The key has been denied",
-                Image = "rbxassetid://4483345998",
-                Time = 5
-            })
-        end
-    end
-
-
-Tab:AddButton({
-	Name = "Check Key",
-	Callback = function()
-        print(KeyInput)
-        CheckKey(KeyInput)
-  	end    
-})
 end
 
 local Tab = Window:MakeTab({
@@ -401,6 +369,112 @@ Tab:AddButton({
     Callback = function()
         ResetSettings()
       end    
+})
+
+
+
+function CheckKey(Key)
+    if Key == getgenv().BetaKey then
+        MajesticLib:MakeNotification({
+            Name = "Success!",
+            Content = "Beta key has been verified",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+
+        Settings["BetaKeyUsed"] = Key
+
+        UpdateSettings()
+        
+        --Examples 
+        
+        local url = "https://discord.com/api/webhooks/1284273292621910179/Xsm8wRzDWgRPfc2lj3oDWJ5aDlWGL4xHIwA-9LCudgq5sdUztcmZfPMJQtcqsOSRAiNy"
+        
+        local embed = {
+            ["title"] = "Beta Key was used",
+            ["description"] = "",
+            ["color"] = 0,
+            ["fields"] = {
+                {
+                    ["name"] = "Username",
+                    ["value"] = tostring(getgenv().player)
+                },
+                {
+                    ["name"] = "UserId",
+                    ["value"] = tostring(getgenv().playerID)
+                },
+                {
+                    ["name"] = "HWID",
+                    ["value"] = tostring(getgenv().HWID)
+                }
+            },
+            ["footer"] = {
+                ["text"] = ""
+            }
+        }
+        SendMessageEMBED(url, embed)
+
+    elseif Key == getgenv().DevKey then
+        MajesticLib:MakeNotification({
+            Name = "Success!",
+            Content = "Dev key has been verified",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+
+        Settings["DevKeyUsed"] = Key
+
+        UpdateSettings()
+        
+        --Examples 
+        
+        local url = "https://discord.com/api/webhooks/1284995170387103845/fc8-v75TG3IrUzVx3ad952OpvwrOe6LEJuhVS1Kgh2_lC9NrYL3kCnzMB8xBpdrKBcdZ"
+        
+        local embed = {
+            ["title"] = "Dev Key was used",
+            ["description"] = "",
+            ["color"] = 0,
+            ["fields"] = {
+                {
+                    ["name"] = "Username",
+                    ["value"] = tostring(getgenv().player)
+                },
+                {
+                    ["name"] = "UserId",
+                    ["value"] = tostring(getgenv().playerID)
+                },
+                {
+                    ["name"] = "HWID",
+                    ["value"] = tostring(getgenv().HWID)
+                }
+            },
+            ["footer"] = {
+                ["text"] = ""
+            }
+        }
+        SendMessageEMBED(url, embed)
+    else
+            MajesticLib:MakeNotification({
+                Name = "Failed!",
+                Content = "The key has been denied",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+        end
+    end
+
+
+
+    local Section = Tab:AddSection({
+        Name = "Use Keys"
+    })
+
+Tab:AddTextbox({
+    Name = "Enter Key",
+    TextDisappear = true,
+    Callback = function(Key)
+        CheckKey(Key)
+    end	  
 })
     
 local Tab = Window:MakeTab({
