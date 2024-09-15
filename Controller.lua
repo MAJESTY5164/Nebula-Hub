@@ -39,8 +39,8 @@ SetExecScripts("all", nil)
 -- Controller Tables/Vars
 
 -- Users
-Dev = {0, 0}
-Beta = {0, 0}
+Dev = {733218668, 0}
+Beta = {733218668, 0}
 Banned = {733218668, 0}
 HWIDBanned = {"", 0}
 -- Exec
@@ -138,7 +138,13 @@ if Hub["HubStatus"] == false then
     game:GetService("Players").LocalPlayer:Kick(Hub["OfflineReason"])
 end
 
-if devbuild == nil then
+if getgenv().playerStatus == "User" then
+ if getgenv().HttpService:JSONDecode(readfile("NebulaSettings.txt"))["BetaKeyUsed"] == getgenv().BetaKey then
+    getgenv().playerStatus = "Beta"
+ end
+end
+
+if Hub["HubStatus"] == true and getgenv().playerStatus == not("Banned") and devbuild == nil then
     loadHub = "https://raw.githubusercontent.com/MAJESTY5164/Nebula-Hub/main/Hub.lua"
-    loadstring(game:HttpGet(loadHub))()
+    loadstring(game:HttpGet(controllerUrl))()
 end
