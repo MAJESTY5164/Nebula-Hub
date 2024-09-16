@@ -1588,9 +1588,10 @@ print("⛔ " .. fail .. " vulnerabilities not mitigated")
 print("⏺️ " .. unknown .. " vulnerabilities not tested")
 
 wait(3)
-Safty = rate
-print(Unc)
-print(Safty)
+Safty = math.abs(rate - 100)
+print("Unc "..Unc.."%")
+print("Vuln "..Safty.."%")
+
 
 
 
