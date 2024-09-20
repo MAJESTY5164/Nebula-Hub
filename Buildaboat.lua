@@ -1,5 +1,3 @@
-getgenv().playerStatus = "Dev"
-
 getgenv().Icon = "Orion" -- Orion or paste a custom rbxassetid
 getgenv().Name = "Majestic(Builda)"
          Theme = "Custom" -- Orion, Majestic, or Custom
