@@ -1,50 +1,89 @@
--- getgenv().AutoFarm = true
+getgenv().playerStatus = "Dev"
 
-local Players = game:GetService("Players")
-local Workspace = game:GetService("Workspace")
-local Lighting = game:GetService("Lighting")
+getgenv().Icon = "Orion" -- Orion or paste a custom rbxassetid
+getgenv().Name = "Majestic(Builda)"
+         Theme = "Custom" -- Orion, Majestic, or Custom
 
-local LocalPlayer = Players.LocalPlayer
+if getgenv().playerStatus == "User" then
 
-local autoFarm = function(currentRun)
-    local Character = LocalPlayer.Character
-    local NormalStages = Workspace.BoatStages.NormalStages
+    getgenv().StrokeRed = 32
+    getgenv().StrokeGreen = 252
+    getgenv().StrokeBlue = 3
 
-    for i = 1, 10 do
-        local Stage = NormalStages["CaveStage" .. i]
-        local DarknessPart = Stage:FindFirstChild("DarknessPart")
+elseif getgenv().playerStatus == "Beta" then
 
-        if (DarknessPart) then
-            Character.HumanoidRootPart.CFrame = DarknessPart.CFrame
+    getgenv().StrokeRed = 3
+    getgenv().StrokeGreen = 78
+    getgenv().StrokeBlue = 252
 
-            local Part = Instance.new("Part", LocalPlayer.Character)
-            Part.Anchored = true
-            Part.Position = LocalPlayer.Character.HumanoidRootPart.Position - Vector3.new(0, 6, 0)
+elseif getgenv().playerStatus == "Dev" then
 
-            wait(2)
-            Part:Destroy()
-        end
-    end
+    getgenv().StrokeRed = 255
+    getgenv().StrokeGreen = 0
+    getgenv().StrokeBlue = 182
 
-    repeat wait()
-        Character.HumanoidRootPart.CFrame = NormalStages.TheEnd.GoldenChest.Trigger.CFrame
-    until Lighting.ClockTime ~= 14
-
-    local Respawned = false
-    local Connection
-    Connection = LocalPlayer.CharacterAdded:Connect(function()
-        Respawned = true
-        Connection:Disconnect()
-    end)
-
-    repeat wait() until Respawned
-    wait(1)
 end
 
-local autoFarmRun = 1
-while wait() do
-    if (getgenv().AutoFarm) then
-        autoFarm(autoFarmRun)
-        autoFarmRun = autoFarmRun + 1
-    end
+    getgenv().MainRed = 10
+    getgenv().MainGreen = 10
+    getgenv().MainBlue = 10
+
+    getgenv().SecondRed = 10
+    getgenv().SecondGreen = 10
+    getgenv().SecondBlue = 10
+
+    getgenv().DividerRed = 60
+    getgenv().DividerGreen = 70
+    getgenv().DividerBlue = 60
+
+    getgenv().TextRed = 240
+    getgenv().TextGreen = 240
+    getgenv().TextBlue = 240
+
+    getgenv().TextDarkRed = 150
+    getgenv().TextDarkGreen = 150
+    getgenv().TextDarkBlue = 150
+
+    getgenv().Theme = "Custom"
+
+local MajesticLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/CeleryHub-official/Majestic-Lib/main/Lib%20Source')))()
+
+local Window = MajesticLib:MakeWindow({Name = "Nebula Hub Build a boat", HidePremium = false, SaveConfig = true, ConfigFolder = "MajesticTest"})
+
+local Tab = Window:MakeTab({
+	Name = "Main",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+Tab:AddButton({
+	Name = "Item Giver",
+	Callback = function()
+		itemgiver = "https://raw.githubusercontent.com/MAJESTY5164/Nebula-Hub/main/DebugItemGiver.lua"
+		loadstring(game:HttpGet(itemgiver))()
+  	end    
+})
+
+if getgenv().AutoFarm == nil then
+	getgenv().AutoFarm = false
 end
+
+Tab:AddToggle({
+	Name = "Auto Grind",
+	Default = getgenv().AutoFarm,
+	Callback = function(Value)
+		getgenv().AutoFarm = Value
+	end    
+})
+
+Tab:AddButton({
+	Name = "Click this if auto farm breaks",
+	Callback = function()
+		getgenv().AutoFarmLoaded = nil
+		buildafarm = "https://raw.githubusercontent.com/MAJESTY5164/Nebula-Hub/main/buildafarm.lua"
+		loadstring(game:HttpGet(buildafarm))()
+  	end    
+})
+
+buildafarm = "https://raw.githubusercontent.com/MAJESTY5164/Nebula-Hub/main/buildafarm.lua"
+loadstring(game:HttpGet(buildafarm))()
