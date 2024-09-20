@@ -1,6 +1,4 @@
--- Original Code by https://scriptblox.com/script/Universal-Script-workspace-tool-giver-ui-12089
--- Edited by dsgdfs/Sky
-local ScreenGui = Instance.new("ScreenGui")
+local ToolGiverGui = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
 local ScrollingFrame = Instance.new("ScrollingFrame")
 local UIListLayout = Instance.new("UIListLayout")
@@ -8,11 +6,11 @@ local TextButton = Instance.new("TextButton")
 local TextLabel = Instance.new("TextLabel")
 local TextButton_2 = Instance.new("TextButton")
 
-ScreenGui.Parent = game:GetService("CoreGui")
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ScreenGui.ResetOnSpawn = false
+ToolGiverGui.Parent = game:GetService("CoreGui")
+ToolGiverGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ToolGiverGui.ResetOnSpawn = false
 
-Frame.Parent = ScreenGui
+Frame.Parent = ToolGiverGui
 Frame.Active = true
 Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 Frame.BorderColor3 = Color3.fromRGB(255, 0, 255)
@@ -48,7 +46,7 @@ TextLabel.BorderColor3 = Color3.fromRGB(255, 0, 255)
 TextLabel.Position = UDim2.new(-0.00129664713, 0, -0.000140406293, 0)
 TextLabel.Size = UDim2.new(0, 218, 0, 25)
 TextLabel.Font = Enum.Font.SourceSans
-TextLabel.Text = "Tool Giver"
+TextLabel.Text = "MAJESTY's Tool Giver"
 TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 TextLabel.TextSize = 14.000
 
@@ -58,43 +56,61 @@ TextButton_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
 TextButton_2.Position = UDim2.new(0.0825688094, 0, 0.804444432, 0)
 TextButton_2.Size = UDim2.new(0, 180, 0, 30)
 TextButton_2.Font = Enum.Font.SourceSans
-TextButton_2.Text = "update list"
+TextButton_2.Text = "Update List"
 TextButton_2.TextColor3 = Color3.fromRGB(0, 0, 0)
 TextButton_2.TextSize = 14.000
 
-local function FNDR_fake_script() -- Frame.LocalScript 
+local function FNDR_fake_script()
 	local script = Instance.new('LocalScript', Frame)
 
 	local button = script.Parent.ScrollingFrame.TextButton
 	button.Parent = nil
 	button.Name = "slaves"
+	local toolNames = {}
+
+	local function cloneToBackpack(toolName)
+		local clonedTool = toolName:Clone()
+		clonedTool.Parent = game:GetService("Players").LocalPlayer:WaitForChild("Backpack")
+	end
+
 	local function updatelist()
 		for i, v in script.Parent.ScrollingFrame:GetDescendants() do
 			if v:IsA("TextButton") then
 				v:Destroy()
 			end
 		end
-	
-		local function cloneToBackpack(toolName)
-			local clonedTool = toolName:Clone()
-			clonedTool.Parent = game:GetService("Players").LocalPlayer:WaitForChild("Backpack")
-		end
+
+		toolNames = {}
+		local tools = {}
 		for i, v in pairs(game:GetDescendants()) do
 			if v:IsA("Tool") and v.Parent.Parent ~= game:GetService("Players").LocalPlayer then
-				local clonebutton = button:Clone()
-				clonebutton.Parent = script.Parent.ScrollingFrame
-				clonebutton.Visible = true
-				clonebutton.Text = v.Name
-				clonebutton.MouseButton1Click:Connect(function()
-					cloneToBackpack(v)
-				end)
+				if not toolNames[v.Name] then
+					table.insert(tools, v)
+					toolNames[v.Name] = true
+				end
 			end
 		end
+
+		table.sort(tools, function(a, b)
+			return a.Name < b.Name
+		end)
+
+		for _, tool in ipairs(tools) do
+			local clonebutton = button:Clone()
+			clonebutton.Parent = script.Parent.ScrollingFrame
+			clonebutton.Visible = true
+			clonebutton.Text = tool.Name
+			clonebutton.MouseButton1Click:Connect(function()
+				cloneToBackpack(tool)
+			end)
+		end
 	end
+
 	script.Parent.TextButton.MouseButton1Click:Connect(updatelist)
 end
 coroutine.wrap(FNDR_fake_script)()
-local function SGRWUDK_fake_script() -- Frame.DragScript 
+
+local function SGRWUDK_fake_script()
 	local script = Instance.new('LocalScript', Frame)
 
 	local UIS = game:GetService('UserInputService')
@@ -133,6 +149,5 @@ local function SGRWUDK_fake_script() -- Frame.DragScript
 			end
 		end
 	end)
-	
 end
 coroutine.wrap(SGRWUDK_fake_script)()
