@@ -1,3 +1,20 @@
+local LogService = game:FindService("LogService")
+
+local getthreadidentity = function()
+    local BindableEvent = Instance.new("BindableEvent")
+
+    LogService.MessageOut:Once(function(Message)
+        BindableEvent:Fire(tonumber(string.sub(Message, 20, # Message)))
+        BindableEvent:Destroy()
+    end)
+
+    printidentity()
+
+    return BindableEvent.Event:Wait()
+end
+
+local identity = getthreadidentity()
+
 game:GetService("StarterGui"):SetCore("SendNotification", {
     Title = "Debug Menu";
     Text = "Loading, Open F+9 Console for more information";
@@ -1589,9 +1606,11 @@ print("⏺️ " .. unknown .. " vulnerabilities not tested")
 
 wait(3)
 Safty = math.abs(rate - 100)
+print("Executor Information ---------")
+print("")
 print("Unc "..Unc.."%")
 print("Vuln "..Safty.."%")
-
+print("Executor Level is "..identity)
 
 
 
@@ -1649,9 +1668,10 @@ local Tab = Window:MakeTab({
 	PremiumOnly = false
 })
 
-Tab:AddLabel("Executor Name " .. Executor)
-Tab:AddLabel("Executor unc " .. Unc .. "%")
-Tab:AddLabel("Executor vulnerability " .. Safty .. "% (Higher is more vulnerable)")
+Tab:AddLabel("Executor Name | " .. Executor)
+Tab:AddLabel("Executor unc | " .. Unc .. "%")
+Tab:AddLabel("Executor vulnerability | " .. Safty .. "% (Higher is more vulnerable)")
+Tab:AddLabel("Executor level | " .. identity)
 
 local Tab = Window:MakeTab({
 	Name = "Game Info",
