@@ -1679,8 +1679,8 @@ local Tab = Window:MakeTab({
 	PremiumOnly = false
 })
 
-Tab:AddLabel("Game Name " .. GameName)
-Tab:AddLabel("Game ID " .. game.PlaceId)
+Tab:AddLabel("Game Name | " .. GameName)
+Tab:AddLabel("Game ID | " .. game.PlaceId)
 
 local Tab = Window:MakeTab({
 	Name = "User Info",
@@ -1690,8 +1690,8 @@ local Tab = Window:MakeTab({
 
 
 
-Tab:AddLabel("Player DisplayName " .. game:GetService("Players").LocalPlayer.DisplayName)
-Tab:AddLabel("Player ID " .. game:GetService("Players").LocalPlayer.UserId)
+Tab:AddLabel("Player DisplayName | " .. game:GetService("Players").LocalPlayer.DisplayName)
+Tab:AddLabel("Player ID | " .. game:GetService("Players").LocalPlayer.UserId)
 
 local Tab = Window:MakeTab({
 	Name = "Sensitive User Info",
@@ -1699,7 +1699,7 @@ local Tab = Window:MakeTab({
 	PremiumOnly = false
 })
 
-Tab:AddLabel("User HWID " .. game:GetService("RbxAnalyticsService"):GetClientId())
+Tab:AddLabel("User HWID | " .. game:GetService("RbxAnalyticsService"):GetClientId())
 
 OrionLib:Init()
 --[[ Tab1:AddToggle({
