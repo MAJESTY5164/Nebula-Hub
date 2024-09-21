@@ -1,29 +1,8 @@
-local LogService = game:FindService("LogService")
-
-local getthreadidentity = function()
-    local BindableEvent = Instance.new("BindableEvent")
-
-    LogService.MessageOut:Once(function(Message)
-        BindableEvent:Fire(tonumber(string.sub(Message, 20, # Message)))
-        BindableEvent:Destroy()
-    end)
-
-    printidentity()
-
-    return BindableEvent.Event:Wait()
-end
-
-local identity = getthreadidentity()
-
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "Debug Menu";
-    Text = "Loading, Open F+9 Console for more information";
-    Duration = 5; -- Duration in seconds
-})
-
-Unc = nil
-Rate = nil
-Safty = nil 
+print("")
+print("")
+print("UNC CHECK")
+print("")
+print("")
 
 local passes, fails, undefined = 0, 0, 0
 local running = 0
@@ -97,6 +76,7 @@ task.defer(function()
 	print("✅ Tested with a " .. rate .. "% success rate (" .. outOf .. ")")
 	print("⛔ " .. fails .. " tests failed")
 	print("⚠️ " .. undefined .. " globals are missing aliases")
+	Unc = rate
 end)
 
 -- Cache
@@ -556,6 +536,19 @@ test("fireclickdetector", {}, function()
 	fireclickdetector(detector, 50, "MouseHoverEnter")
 end)
 
+test("fireproximityprompt", {}, function()
+	local prompt = Instance.new("ProximityPrompt")
+	fireproximityprompt(prompt, 1, false)
+end)
+
+test("firetouchinterest", {}, function()
+	local part = Instance.new("Part")
+
+	firesignal(part, "Touched")
+end)
+
+test("firesignal", {})
+
 test("getcallbackvalue", {}, function()
 	local bindable = Instance.new("BindableFunction")
 	local function test()
@@ -666,7 +659,7 @@ test("getnamecallmethod", {}, function()
 	assert(method == "GetService", "Did not get the correct method (GetService)")
 end)
 
-test("isreadonly", {}, function()
+test("isreadonly", {"iswriteable"}, function()
 	local object = {}
 	table.freeze(object)
 	assert(isreadonly(object), "Did not return true for a read-only table")
@@ -682,7 +675,7 @@ test("setrawmetatable", {}, function()
 	end
 end)
 
-test("setreadonly", {}, function()
+test("setreadonly", {"makewritable"}, function()
 	local object = { success = false }
 	table.freeze(object)
 	setreadonly(object, false)
@@ -897,10 +890,120 @@ test("WebSocket.connect", {}, function()
 	ws:Close()
 end)
 
-wait(2)
-print(passes .. "✅ ", fails .. "⛔ ", undefined .. "⏺️ " .. "Out of " .. passes + fails + undefined)
-local Unc = math.round(passes / (passes + fails + undefined) * 100)
-print(Unc .. "% UNC")
+test("protectgui", {})
+test("unprotectgui", {})
+test("getdevice", {}, function()
+	local device = getdevice()
+	local realdevice = tostring(game:GetService("UserInputService"):GetPlatform()):split(".")[3]
+	assert(device == realdevice, "Did not return correct device (expected "..realdevice.." got "..device..")")
+end)
+
+test("getping", {}, function()
+	function a()
+		local rawping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
+    	local pingstr = rawping:sub(1, #rawping - 7)
+    	local pingnum = tonumber(pingstr)
+    	local ping = tostring(math.round(pingnum))
+		return ping
+	end
+
+	local ping = getping()
+	local realping = a()
+	assert(ping == realping, "Did not return correct ping (expected "..realping.." got "..ping..")")
+end)
+
+test("getfps", {}, function()
+	function a()
+		local RunService = game:GetService("RunService")
+		local FPS
+		local TimeFunction = RunService:IsRunning() and time or os.clock
+	
+		if not TimeFunction then
+			warn("TimeFunction is nil")
+			return
+		end
+	
+		local LastIteration, Start
+		local FrameUpdateTable = {}
+	
+		local function HeartbeatUpdate()
+			LastIteration = TimeFunction()
+			for Index = #FrameUpdateTable, 1, -1 do
+				FrameUpdateTable[Index + 1] = FrameUpdateTable[Index] >= LastIteration - 1 and FrameUpdateTable[Index] or nil
+			end
+	
+			FrameUpdateTable[1] = LastIteration
+			FPS = TimeFunction() - Start >= 1 and #FrameUpdateTable or #FrameUpdateTable / (TimeFunction() - Start)
+		end
+	
+		Start = TimeFunction()
+		RunService.Heartbeat:Connect(HeartbeatUpdate)
+		task.wait(1.1)
+	
+		return FPS
+	end	
+
+	local fps = getfps()
+	local realfps = a()
+
+	assert(fps == realfps, "Did not return correct fps (expected "..realfps.." got "..fps..")")
+end)
+
+test("deepclone", {})
+
+test("setsimulationradius", {}, function()
+	local LocalPlayer = game:GetService("Players").LocalPlayer
+
+	setsimulationradius(100, 101)
+	assert(LocalPlayer.SimulationRadius == 100, "Did not set simulation radius")
+	assert(LocalPlayer.MaximumSimulationRadius == 101, "Did not set maximum simulation radius")
+end)
+
+test("isnetworkowner", {})
+test("keyclick", {})
+test("keypress", {})
+test("keyrelease", {})
+test("getobjects", {})
+test("decompile", {})
+test("saveinstance", {})
+test("getfflag", {}, function()
+	local test = getfflag("GetFastString")
+
+	assert(test ~= nil, "Test returned nil")
+end)
+
+test("getaffiliateid", {"getaffiliate"}, function()
+	local test = getaffiliateid()
+
+	assert(test ~= nil, "Test returned nil")
+end)
+
+test("getlocalplayer", {"getplayer"}, function()
+	local test = getlocalplayer()
+
+	assert(test == game:GetService("Players").LocalPlayer, "Test did not return Local Player")
+end)
+
+test("getplayers", {}, function()
+	local test = getplayers()
+
+	assert(test == game:GetService("Players"), "Test did not return Players")
+end)
+
+test("join", {"joingame"})
+
+wait(1)
+
+print("")
+print("")
+print("UNC CHECK ^^^")
+print("")
+print("")
+print("")
+print("")
+print("VULN CHECK vvv")
+print("")
+print("")
 
 -- i dont like identing my code okay
 -- now you may ask: why in god's name is the code making me want to pull my eyes out? dont ask why... all it matters is it works!
@@ -1605,6 +1708,26 @@ print("⛔ " .. fail .. " vulnerabilities not mitigated")
 print("⏺️ " .. unknown .. " vulnerabilities not tested")
 
 wait(3)
+
+local LogService = game:FindService("LogService")
+
+local getthreadidentity = function()
+    local BindableEvent = Instance.new("BindableEvent")
+
+    LogService.MessageOut:Once(function(Message)
+        BindableEvent:Fire(tonumber(string.sub(Message, 20, # Message)))
+        BindableEvent:Destroy()
+    end)
+
+    printidentity()
+
+    return BindableEvent.Event:Wait()
+end
+
+wait(0)
+
+local identity = getthreadidentity()
+
 Safty = math.abs(rate - 100)
 print("Executor Information ---------")
 print("")
@@ -1650,6 +1773,7 @@ Executor = identifyexecutor()
 GameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
 player = game:GetService("Players").LocalPlayer
 playerID = player.UserId
+
 
 
 
