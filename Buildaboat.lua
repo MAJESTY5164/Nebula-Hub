@@ -58,6 +58,7 @@ Tab:AddButton({
 	Name = "Item Giver",
 	Callback = function()
 		itemgiver = "https://raw.githubusercontent.com/MAJESTY5164/Nebula-Hub/main/DebugItemGiver.lua"
+			getgenv().Game = {"Build a Boat", 210851291}
 		loadstring(game:HttpGet(itemgiver))()
   	end    
 })
