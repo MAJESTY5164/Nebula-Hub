@@ -1,3 +1,5 @@
+if getgenv().Game[1] == "all" or getgenv().Game[2] == getgenv().GameId then
+
 local ToolGiverGui = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
 local ScrollingFrame = Instance.new("ScrollingFrame")
@@ -46,7 +48,9 @@ TextButton.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
 TextButton.TextStrokeTransparency = 0.000
 TextButton.TextWrapped = true
 
-TextLabel.Parent = Frame
+if getgenv().Game[1] == "all" then
+    
+    TextLabel.Parent = Frame
 TextLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 TextLabel.BorderColor3 = Color3.fromRGB(255, 0, 255)
 TextLabel.Position = UDim2.new(-0.00129664713, 0, -0.000140406293, 0)
@@ -55,6 +59,20 @@ TextLabel.Font = Enum.Font.SourceSans
 TextLabel.Text = "MAJESTY's Tool Giver"
 TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 TextLabel.TextSize = 14.000
+
+else
+
+TextLabel.Parent = Frame
+TextLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.BorderColor3 = Color3.fromRGB(255, 0, 255)
+TextLabel.Position = UDim2.new(-0.00129664713, 0, -0.000140406293, 0)
+TextLabel.Size = UDim2.new(0, 218, 0, 25)  -- Original size
+TextLabel.Font = Enum.Font.SourceSans
+TextLabel.Text = "MAJESTY's Tool Giver - ".. getgenv().Game[1]
+TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.TextSize = 14.000
+
+end
 
 TextButton_2.Parent = Frame
 TextButton_2.BackgroundColor3 = Color3.fromRGB(177, 177, 177)
@@ -171,3 +189,101 @@ local function SGRWUDK_fake_script()
 	end)
 end
 coroutine.wrap(SGRWUDK_fake_script)()
+
+else
+    
+    getgenv().Game = "all"
+
+    local ToolGiverGui = Instance.new("ScreenGui")
+    local Frame = Instance.new("Frame")
+    local CloseButton = Instance.new("TextButton")  -- Close Button
+    local CenteredTextLabel = Instance.new("TextLabel")  -- Centered Text
+    
+    -- Variables for Close Button position and size
+    local CloseX = 0.9  -- Change this for horizontal positioning
+    local CloseY = 0.016  -- Change this for vertical positioning
+    local CloseSize = UDim2.new(0, 18, 0, 18)  -- Close Button size
+    
+    ToolGiverGui.Parent = game:GetService("CoreGui")
+    ToolGiverGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    ToolGiverGui.ResetOnSpawn = false
+    
+    Frame.Parent = ToolGiverGui
+    Frame.Active = true
+    Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    Frame.BorderColor3 = Color3.fromRGB(255, 0, 255)
+    Frame.Position = UDim2.new(0.061, 0, 0.094, 0)
+    Frame.Size = UDim2.new(0, 218, 0, 225)
+    
+    -- Add the centered text
+    CenteredTextLabel.Parent = Frame
+    CenteredTextLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    CenteredTextLabel.BorderColor3 = Color3.fromRGB(255, 0, 255)
+    CenteredTextLabel.Position = UDim2.new(0.1, 0, 0.4, 0)  -- Position in the center
+    CenteredTextLabel.Size = UDim2.new(0.8, 0, 0.2, 0)  -- Adjust size if needed
+    CenteredTextLabel.Font = Enum.Font.SourceSans
+    CenteredTextLabel.Text = "Wrong GameId!"
+    CenteredTextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    CenteredTextLabel.TextSize = 20
+    CenteredTextLabel.TextWrapped = true
+    CenteredTextLabel.TextXAlignment = Enum.TextXAlignment.Center
+    CenteredTextLabel.TextYAlignment = Enum.TextYAlignment.Center
+    
+    -- Close button
+    CloseButton.Parent = Frame
+    CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Red color
+    CloseButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    CloseButton.Position = UDim2.new(CloseX, 0, CloseY, 0)  -- Use the CloseX and CloseY variables
+    CloseButton.Size = CloseSize  -- Use the CloseSize variable
+    CloseButton.Font = Enum.Font.SourceSans
+    CloseButton.Text = "X"
+    CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    CloseButton.TextSize = 14
+    
+    CloseButton.MouseButton1Click:Connect(function()
+        ToolGiverGui:Destroy()  -- Destroy the GUI
+    end)
+    
+    -- Dragging functionality
+    local function SGRWUDK_fake_script()
+        local script = Instance.new('LocalScript', Frame)
+    
+        local UIS = game:GetService('UserInputService')
+        local frame = script.Parent
+        local dragToggle = nil
+        local dragSpeed = 0
+        local dragStart = nil
+        local startPos = nil
+        
+        local function updateInput(input)
+            local delta = input.Position - dragStart
+            local position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+            game:GetService('TweenService'):Create(frame, TweenInfo.new(dragSpeed), {
+                Position = position
+            }):Play()
+        end
+        
+        frame.InputBegan:Connect(function(input)
+            if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then 
+                dragToggle = true
+                dragStart = input.Position
+                startPos = frame.Position
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        dragToggle = false
+                    end
+                end)
+            end
+        end)
+        
+        UIS.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                if dragToggle then
+                    updateInput(input)
+                end
+            end
+        end)
+    end
+    coroutine.wrap(SGRWUDK_fake_script)()
+
+end
